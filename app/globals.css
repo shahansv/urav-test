@@ -42,6 +42,7 @@
 
 body {
   position: relative;
+  background-color: black;
 }
 
 @theme inline {
@@ -131,4 +132,17 @@ body {
   html {
     @apply font-sans;
   }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+html,
+body {
+  height: auto;
+}
+
+body {
+  overflow-x: hidden;
 }

@@ -1,5 +1,3 @@
-"use client";
-
 import { Menu } from "lucide-react";
 import { Button } from "../ui/button";
 import {
@@ -10,7 +8,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -23,7 +20,7 @@ export function NavDropdownMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost">
+          <Button variant="link" aria-label="Open navigation menu">
             <Menu />
           </Button>
         }

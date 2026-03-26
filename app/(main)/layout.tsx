@@ -1,3 +1,7 @@
+import Footer from "@/components/web/footer";
+import { Header } from "@/components/web/header";
+import PageTransition from "@/components/web/page-transition";
+
 export default function MainLayout({
   children,
 }: {
@@ -5,7 +9,9 @@ export default function MainLayout({
 }) {
   return (
     <main className="flex flex-col min-h-screen bg-black text-neutral-100">
-      {children}
+      <Header />
+      <PageTransition>{children}</PageTransition>
+      <Footer />
     </main>
   );
 }

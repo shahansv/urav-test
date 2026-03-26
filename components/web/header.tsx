@@ -35,17 +35,19 @@ export function Header() {
           className="flex items-center"
           aria-label="Go to homepage"
         >
-          <Image
-            src="https://ik.imagekit.io/shahansv/Urav/logo.png?updatedAt=1772264205372"
-            alt="Urav company logo"
-            width={120}
-            height={31}
-            priority
-            className="h-auto w-auto"
-          />
+          <div className="relative w-32 h-8">
+            <Image
+              src="/assets/logo.png"
+              alt="Urav logo"
+              fill
+              sizes="128px"
+              className="object-contain"
+              priority
+            />
+          </div>
         </Link>
 
-        <div className="hidden lg:flex items-center justify-center bg-[#630D15] text-white rounded-2xl px-4 py-0.5 ">
+        <div className="hidden lg:flex items-center justify-center bg-[#630D15] text-white rounded-2xl px-4 py-0.5">
           <NavMenu />
         </div>
 
