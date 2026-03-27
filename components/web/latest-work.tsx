@@ -27,6 +27,7 @@ export function LatestWork() {
                   src="/pakarnaattam/thayam.jpg"
                   alt="Pakarnaattam Theyyam"
                   fill
+                  priority
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 60vw"
                 />

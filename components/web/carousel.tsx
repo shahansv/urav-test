@@ -171,6 +171,7 @@ export const Carousel: React.FC = (): JSX.Element => {
                 src={slide.src}
                 alt={`carousel-${index}`}
                 fill
+                priority
                 sizes="(max-width: 640px) 80vw,
                 (max-width: 1024px) 50vw,
                 33vw"

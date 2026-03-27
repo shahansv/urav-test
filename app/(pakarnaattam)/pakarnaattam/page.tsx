@@ -11,7 +11,6 @@ const KugileFont = localFont({
 export default function PakarnaattamPage() {
   return (
     <main className="relative w-full h-screen bg-black overflow-hidden">
-
       <div className="absolute top-6 right-6 z-50">
         <SoundToggle file="/pakarnaattam/fire.opus" />
       </div>
@@ -62,6 +61,7 @@ export default function PakarnaattamPage() {
             src="/pakarnaattam/torch.png"
             alt="torch"
             fill
+            priority
             className="object-contain hover:animate-pulse"
           />
         </Link>
