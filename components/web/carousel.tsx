@@ -24,7 +24,7 @@ const slides = [
     title: "Indigenous practice",
   },
   { src: "/carousel-img/rituals.jpg", title: "Rituals" },
-  { src: "/carousel-img/Communities2.jpg", title: "Cultural narratives" },
+  { src: "/carousel-img/communities2.jpg", title: "Cultural narratives" },
 ];
 
 export const Carousel: React.FC = (): JSX.Element => {
