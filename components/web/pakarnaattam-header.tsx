@@ -23,7 +23,7 @@ export default function PakarnaattamHeader({
             <Home className="cursor-pointer transition hover:scale-110" />
           </Link>
           {showMap && (
-            <Link href="/initiative/pakarnaattam">
+            <Link href="/pakarnaattam/map">
               <Map className="cursor-pointer transition hover:scale-110" />
             </Link>
           )}

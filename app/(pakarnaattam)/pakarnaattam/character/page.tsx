@@ -6,7 +6,7 @@ export default function PakarnaattamCharacterPage() {
   return (
     <main>
       <PakarnaattamHeader showMap={false} />
-      <article className="mx-auto w-full max-w-6xl px-4 py-8 lg:px-14 ">
+      <article className="mx-auto w-full max-w-5xl px-4 py-8 lg:px-14 ">
         <div className="space-y-4 sm:space-y-6 text-sm sm:text-base md:text-lg leading-relaxed">
           <p>
             With the thunder of the Chendamelam, the clash of Ilathalam, the
@@ -72,7 +72,7 @@ export default function PakarnaattamCharacterPage() {
         </div>
       </article>
 
-      <section className="mx-auto w-full max-w-6xl px-4 py-8 lg:px-14">
+      <section className="mx-auto w-full max-w-5xl px-4 py-8 lg:px-14">
         <Character />
       </section>
 
