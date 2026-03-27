@@ -6,7 +6,10 @@ import Link from "next/link";
 export default function PakarnaattamMakingPage() {
   return (
     <main>
-      <PakarnaattamHeader />
+      <PakarnaattamHeader
+        soundFile="/pakarnaattam/story.opus"
+        soundVolume={0.6}
+      />
       <article className="mx-auto w-full max-w-5xl px-4 py-8 lg:px-14 ">
         <div className="space-y-4 sm:space-y-6 text-sm sm:text-base md:text-lg leading-relaxed mb-16 md-24">
           <figure className="flex justify-center">

@@ -6,7 +6,10 @@ import Link from "next/link";
 export default function PakarnaattamMuthappanPage() {
   return (
     <main>
-      <PakarnaattamHeader />
+      <PakarnaattamHeader
+        soundFile="/pakarnaattam/muthappan.opus"
+        soundVolume={0.8}
+      />
       <article className="mx-auto w-full max-w-5xl px-4 py-8 lg:px-14 ">
         <div className="space-y-4 sm:space-y-6 text-sm sm:text-base md:text-lg leading-relaxed">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight my-6">
