@@ -1,5 +1,7 @@
 import PakarnaattamHeader from "@/components/web/pakarnaattam-header";
 import ScrollButton from "@/components/web/scroll-button";
+import ScrollZoom from "@/components/web/scroll-zoom";
+import PakarnaattamMapPage from "../../map/page";
 
 export default function PakarnaattamNeeluPage() {
   return (
@@ -76,7 +78,9 @@ export default function PakarnaattamNeeluPage() {
           </p>
         </div>
       </article>
-      <section></section>
+      <ScrollZoom>
+        <PakarnaattamMapPage />
+      </ScrollZoom>
 
       <ScrollButton isDarkBackground />
     </main>

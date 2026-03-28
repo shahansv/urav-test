@@ -27,8 +27,8 @@ export default function PakarnaattamRitualFormsPage() {
         </div>
       </article>
 
-      <section className="min-h-screen px-4 py-16 flex flex-col items-center justify-center gap-14 sm:gap-20">
-        <div className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 w-full max-w-4xl place-items-center">
+      <section className="relative min-h-screen px-4 py-16 flex flex-col items-center justify-center">
+        <div className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 w-full max-w-4xl place-items-center mb-16 sm:mb-20 ">
           <ShrineCard
             title="Kathivanoor Veeran"
             defaultImg="/pakarnaattam/shrine-kathivanoor-veeran.png"
@@ -44,11 +44,11 @@ export default function PakarnaattamRitualFormsPage() {
           />
         </div>
 
-        <p className="text-white animate-pulse text-xs sm:text-sm md:text-base text-center px-2">
+        <p className="absolute top-[52%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-white animate-pulse text-xs sm:text-sm md:text-base text-center px-2 pointer-events-none">
           Click on any Shrine to know more
         </p>
 
-        <div className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 w-full max-w-4xl place-items-center">
+        <div className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 w-full max-w-4xl place-items-center mt-16 sm:mt-20 ">
           <ShrineCard
             title="Gulikan"
             defaultImg="/pakarnaattam/shrine-gulikan.png"
