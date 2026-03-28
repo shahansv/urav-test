@@ -86,7 +86,7 @@ export default function PakarnaattamKannanPage() {
       </article>
 
       <ScrollZoom>
-        <PakarnaattamMapPage />
+        <PakarnaattamMapPage showHeader={false} showPulse={false} />
       </ScrollZoom>
 
       <ScrollButton isDarkBackground />

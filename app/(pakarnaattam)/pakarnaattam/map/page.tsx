@@ -54,6 +54,11 @@ interface ImageRect {
   height: number;
 }
 
+interface PakarnaattamMapPageProps {
+  showHeader?: boolean;
+  showPulse?: boolean;
+}
+
 const DOTS: DotConfig[] = [
   {
     id: 1,
@@ -157,7 +162,10 @@ function labelStyle(position: Position): React.CSSProperties {
   }
 }
 
-export default function PakarnaattamMapPage() {
+export default function PakarnaattamMapPage({
+  showHeader = true,
+  showPulse = true,
+}: PakarnaattamMapPageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const roRef = useRef<ResizeObserver | null>(null);
@@ -255,7 +263,7 @@ export default function PakarnaattamMapPage() {
   }
 
   return (
-    <main className="relative w-screen h-dvh overflow-hidden">
+    <main className="relative w-screen h-dvh overflow-hidden bg-[url('/pakarnaattam/fire-bg.png')] bg-cover bg-center bg-no-repeat">
       <style>{`
         .map-bg {
           position: absolute;
@@ -297,7 +305,7 @@ export default function PakarnaattamMapPage() {
           inset: 4px;
           border-radius: 50%;
           border: 1.5px solid rgba(200, 40, 40, 0.55);
-          animation: pulse-ring 2s ease-out infinite;
+          ${showPulse ? "animation: pulse-ring 2s ease-out infinite;" : "display: none;"}
         }
         @keyframes pulse-ring {
           0%   { transform: scale(1);   opacity: 0.7; }
@@ -416,9 +424,11 @@ export default function PakarnaattamMapPage() {
           })}
       </div>
 
-      <div className="absolute top-0 left-0 right-0 z-10">
-        <PakarnaattamHeader showMap={false} />
-      </div>
+      {showHeader && (
+        <div className="absolute top-0 left-0 right-0 z-10">
+          <PakarnaattamHeader showMap={false} />
+        </div>
+      )}
 
       <p className="absolute top-8 md:top-16 left-1/2 -translate-x-1/2 z-20 text-white animate-pulse text-center text-sm md:text-base px-4 whitespace-nowrap pointer-events-none">
         Point the torch towards the dots to select

@@ -139,7 +139,7 @@ export default function PakarnaattamKathivanoorVeeranPage() {
           Go back to map
         </Link>
         <Link
-          href="/pakarnaattam/map/ritualforms"
+          href="/pakarnaattam/map/ritual-forms"
           className="hover:underline hover:animate-pulse"
         >
           Select a different theyyam story

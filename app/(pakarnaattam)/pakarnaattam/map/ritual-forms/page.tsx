@@ -33,14 +33,14 @@ export default function PakarnaattamRitualFormsPage() {
             title="Kathivanoor Veeran"
             defaultImg="/pakarnaattam/shrine-kathivanoor-veeran.png"
             hoverImg="/pakarnaattam/shrine-kathivanoor-veeran-hover.png"
-            href="/pakarnaattam/map/ritualforms/kathivanoor-veeran"
+            href="/pakarnaattam/map/ritual-forms/kathivanoor-veeran"
           />
 
           <ShrineCard
             title="Pottan"
             defaultImg="/pakarnaattam/shrine-pottan.png"
             hoverImg="/pakarnaattam/shrine-pottan-hover.png"
-            href="/pakarnaattam/map/ritualforms/pottan"
+            href="/pakarnaattam/map/ritual-forms/pottan"
           />
         </div>
 
@@ -53,14 +53,14 @@ export default function PakarnaattamRitualFormsPage() {
             title="Gulikan"
             defaultImg="/pakarnaattam/shrine-gulikan.png"
             hoverImg="/pakarnaattam/shrine-gulikan-hover.png"
-            href="/pakarnaattam/map/ritualforms/gulikan"
+            href="/pakarnaattam/map/ritual-forms/gulikan"
           />
 
           <ShrineCard
             title="Muthappan"
             defaultImg="/pakarnaattam/shrine-muthappan.png"
             hoverImg="/pakarnaattam/shrine-muthappan-hover.png"
-            href="/pakarnaattam/map/ritualforms/muthappan"
+            href="/pakarnaattam/map/ritual-forms/muthappan"
           />
         </div>
       </section>

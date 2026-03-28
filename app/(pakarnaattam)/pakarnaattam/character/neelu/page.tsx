@@ -79,7 +79,7 @@ export default function PakarnaattamNeeluPage() {
         </div>
       </article>
       <ScrollZoom>
-        <PakarnaattamMapPage />
+        <PakarnaattamMapPage showHeader={false} showPulse={false} />
       </ScrollZoom>
 
       <ScrollButton isDarkBackground />
