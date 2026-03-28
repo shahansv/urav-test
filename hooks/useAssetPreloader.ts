@@ -6,6 +6,28 @@ import { motionValue, animate, MotionValue } from "motion/react";
 const CACHE_NAME = "pakarnaattam-v1";
 const MIN_DURATION_MS = 1500;
 
+function isAudio(url: string) {
+  return /\.(mp3|opus|ogg|wav|m4a|aac)$/i.test(url);
+}
+
+async function preloadAudio(url: string): Promise<void> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return;
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+
+    const audio = new Audio();
+    audio.src = objectUrl;
+    audio.preload = "auto";
+    audio.load();
+
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 5000);
+  } catch {
+    // never block the preloader on a failed audio
+  }
+}
+
 export function useAssetPreloader() {
   const progressMV = useRef<MotionValue<number>>(motionValue(0));
 
@@ -34,11 +56,15 @@ export function useAssetPreloader() {
       await Promise.all(
         assets.map(async (url) => {
           try {
-            const cached = await cache.match(url);
-            if (!cached) {
-              const response = await fetch(url);
-              if (!response.ok) throw new Error(`Failed: ${url}`);
-              await cache.put(url, response.clone());
+            if (isAudio(url)) {
+              await preloadAudio(url);
+            } else {
+              const cached = await cache.match(url);
+              if (!cached) {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Failed: ${url}`);
+                await cache.put(url, response.clone());
+              }
             }
           } catch (err) {
             console.warn(`Could not preload: ${url}`, err);
@@ -47,7 +73,6 @@ export function useAssetPreloader() {
       );
 
       await minTimer;
-
       fakeAnim.stop();
 
       await animate(progressMV.current, 100, {
