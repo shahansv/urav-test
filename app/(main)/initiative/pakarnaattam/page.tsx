@@ -1,220 +1,305 @@
 "use client";
 
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
-import AssetLoader from "@/components/web/asset-loader";
-import ScrollButton from "@/components/web/scroll-button";
-import { useAssetPreloader } from "@/hooks/useAssetPreloader";
-import { AnimatePresence } from "motion/react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { Copy, Check, Heart } from "lucide-react";
+import { motion, Variants } from "motion/react";
 
-const PAKARNAATTAM_ASSETS: string[] = [
-  "/pakarnaattam/fire-bg.png",
-  "/pakarnaattam/fire.opus",
-  "/pakarnaattam/gulikan-img1.jpg",
-  "/pakarnaattam/gulikan-img2.jpg",
-  "/pakarnaattam/gulikan.opus",
-  "/pakarnaattam/human-behind-the-deity.png",
-  "/pakarnaattam/kannan-mask.jpg",
-  "/pakarnaattam/kannan.jpg",
-  "/pakarnaattam/kathivanoor-veeran-img1.jpg",
-  "/pakarnaattam/kathivanoor-veeran-img2.jpg",
-  "/pakarnaattam/kathivanoor-veeran.opus",
-  "/pakarnaattam/making-img1.jpg",
-  "/pakarnaattam/making-img2.jpg",
-  "/pakarnaattam/making-img3.jpg",
-  "/pakarnaattam/making.png",
-  "/pakarnaattam/map.png",
-  "/pakarnaattam/muthappan-img1.jpg",
-  "/pakarnaattam/muthappan-img2.jpg",
-  "/pakarnaattam/muthappan.opus",
-  "/pakarnaattam/neelu-mask.jpg",
-  "/pakarnaattam/neelu.jpg",
-  "/pakarnaattam/pakarnaattam-hero.jpg",
-  "/pakarnaattam/pottan-img1.jpg",
-  "/pakarnaattam/pottan-img2.jpg",
-  "/pakarnaattam/pottan.opus",
-  "/pakarnaattam/rhythms-img1.jpg",
-  "/pakarnaattam/rhythms-img2.jpg",
-  "/pakarnaattam/rhythms-img3.jpg",
-  "/pakarnaattam/rhythms.png",
-  "/pakarnaattam/ritual-forms.png",
-  "/pakarnaattam/shashikumar.jpg",
-  "/pakarnaattam/shrine-gulikan-hover.png",
-  "/pakarnaattam/shrine-gulikan.png",
-  "/pakarnaattam/shrine-kathivanoor-veeran-hover.png",
-  "/pakarnaattam/shrine-kathivanoor-veeran.png",
-  "/pakarnaattam/shrine-muthappan-hover.png",
-  "/pakarnaattam/shrine-muthappan.png",
-  "/pakarnaattam/shrine-pottan-hover.png",
-  "/pakarnaattam/shrine-pottan.png",
-  "/pakarnaattam/story.opus",
-  "/pakarnaattam/thayam.jpg",
-  "/pakarnaattam/torch.png",
-];
+type Idea = {
+  _id: string;
+  name: string;
+  email: string;
+  idea: string;
+  createdAt?: string;
+  isLiked?: boolean;
+};
 
-export default function PakarnaattamPage() {
+export default function AdminDashboard() {
   const router = useRouter();
-  const articleRef = useRef<HTMLElement>(null);
-  const [isDark, setIsDark] = useState(false);
 
-  const { preload, progressMV, isLoading, isDone, error, reset } =
-    useAssetPreloader();
+  const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    router.prefetch("/pakarnaattam");
-  }, [router]);
+  const formatDate = (date?: string) => {
+    if (!date) return { date: "N/A", time: "" };
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsDark(entry.isIntersecting);
-      },
-      {
-        threshold: 0.15,
-        rootMargin: "-10% 0px -10% 0px",
-      },
-    );
+    const d = new Date(date);
 
-    if (articleRef.current) {
-      observer.observe(articleRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (isDone && !error) {
-      router.push("/pakarnaattam");
-    }
-  }, [isDone, error, router]);
-
-  const handleImmerse = () => {
-    preload(PAKARNAATTAM_ASSETS);
+    return {
+      date: d.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      time: d.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
   };
 
-  const handleRetry = () => {
-    reset();
-    preload(PAKARNAATTAM_ASSETS);
+  const copyEmail = async (email: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(email);
+      setCopiedId(id);
+      toast.success("Email copied!");
+      setTimeout(() => setCopiedId(null), 1500);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
+
+  const toggleLike = async (id: string) => {
+    const token = sessionStorage.getItem("admin_token");
+
+    // Instant UI update
+    setIdeas((prev) =>
+      prev.map((item) =>
+        item._id === id ? { ...item, isLiked: !item.isLiked } : item,
+      ),
+    );
+
+    try {
+      const res = await fetch(
+        `https://urav.up.railway.app/toggleLikeIdea/${id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          toast.error("Session expired");
+          sessionStorage.removeItem("admin_token");
+          setTimeout(() => (window.location.href = "/admin"), 1200);
+          return;
+        }
+        throw new Error(data.message || "Failed");
+      }
+
+      setIdeas((prev) =>
+        prev.map((item) =>
+          item._id === id ? { ...item, isLiked: data.idea.isLiked } : item,
+        ),
+      );
+    } catch (err: any) {
+      setIdeas((prev) =>
+        prev.map((item) =>
+          item._id === id ? { ...item, isLiked: !item.isLiked } : item,
+        ),
+      );
+
+      toast.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
+
+    if (!token) {
+      toast.error("Please login first");
+      setTimeout(() => router.push("/admin"), 1200);
+      setLoading(false);
+      return;
+    }
+
+    const fetchIdeas = async () => {
+      try {
+        const res = await fetch("https://urav.up.railway.app/getIdeas", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (res.status === 401) {
+            sessionStorage.removeItem("admin_token");
+            toast.error("Session expired");
+            setTimeout(() => router.push("/admin"), 1200);
+            return;
+          }
+          throw new Error(data.message);
+        }
+
+        setIdeas(data.allIdeas || []);
+      } catch (err: any) {
+        toast.error(err.message);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchIdeas();
+  }, [router]);
+
+  const container: Variants = {
+    hidden: {},
+    show: {
+      transition: { staggerChildren: 0.06 },
+    },
+  };
+
+  const card: Variants = {
+    hidden: { opacity: 0, y: 25 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.35, ease: "easeOut" },
+    },
   };
 
   return (
-    <main
-      className={`min-h-screen transition-colors duration-700 ease-in-out ${
-        isDark ? "bg-black" : "bg-[#F5F2E9]"
-      }`}
-    >
-      <AnimatePresence>
-        {isLoading && (
-          <AssetLoader
-            progressMV={progressMV}
-            error={error}
-            onRetry={handleRetry}
-          />
-        )}
-      </AnimatePresence>
-
-      <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-14 pt-4 lg:pt-8">
-        <div className="relative w-full aspect-320/171">
-          <Image
-            src="/pakarnaattam/pakarnaattam-hero.jpg"
-            alt="pakarnaattam hero"
-            fill
-            className="object-contain rounded-2xl shadow-lg"
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1280px"
-          />
-
-          <div className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2">
-            <div
-              onClick={!isLoading ? handleImmerse : undefined}
-              className={
-                isLoading
-                  ? "pointer-events-none opacity-50 cursor-not-allowed"
-                  : "cursor-pointer"
-              }
-            >
-              <HoverBorderGradient
-                containerClassName="rounded-full"
-                as="button"
-                className="bg-black text-white flex items-center space-x-2 px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-medium"
-              >
-                <span>{isLoading ? "Loading…" : "Immerse Now"}</span>
-              </HoverBorderGradient>
-            </div>
+    <div className="min-h-screen bg-black p-4 sm:p-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl text-white font-semibold">Feedbacks</h2>
+            <p className="text-neutral-400 text-sm">User submitted ideas</p>
           </div>
+
+          {!loading && !error && (
+            <div className="text-sm text-neutral-300 bg-neutral-800 px-3 py-1 rounded-lg border border-neutral-700">
+              {ideas.length} Feedbacks
+            </div>
+          )}
         </div>
-      </section>
 
-      <article
-        ref={articleRef}
-        className={`mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-14 mt-8 transition-colors duration-700 ease-in-out ${
-          isDark ? "text-neutral-200" : "text-neutral-800"
-        }`}
-      >
-        <h1 className="text-3xl sm:text-4xl md:text-5xl leading-snug max-w-3xl py-4 tracking-tight font-semibold">
-          What Pakarnaattam is...
-        </h1>
+        {loading ? (
+          <div className="text-center text-neutral-400">Loading...</div>
+        ) : error ? (
+          <div className="text-center text-red-400">{error}</div>
+        ) : ideas.length === 0 ? (
+          <div className="text-center text-neutral-400">No ideas found.</div>
+        ) : (
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="flex flex-col gap-4"
+          >
+            {ideas.map((item) => {
+              const { date, time } = formatDate(item.createdAt);
+              const isExpanded = expandedId === item._id;
+              const isExpandable = item.idea.length > 120;
 
-        <div className="space-y-5 sm:space-y-6 md:space-y-8 text-sm sm:text-base md:text-lg">
-          <p>
-            Pakarnattam is an illustrated documentation project that explores
-            the cultural and artistic world of Theyyam, a ritual performance
-            tradition practiced in the northern regions of Kerala. Deeply rooted
-            in local belief systems, oral histories, and community
-            participation, Theyyam stands as one of the most powerful ritual art
-            forms in South India. It exists at the intersection of performance,
-            spirituality, storytelling, and visual culture.
-          </p>
+              return (
+                <motion.div
+                  key={item._id}
+                  variants={card}
+                  initial={{ borderColor: "#404040" }}
+                  whileHover={{
+                    scale: 1.01,
+                    borderColor: "#630D15",
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 15,
+                  }}
+                  className="bg-neutral-900 border border-neutral-700 rounded-2xl p-5 shadow-md transition-colors"
+                  onClick={() => {
+                    if (!isExpandable) return;
+                    setExpandedId(isExpanded ? null : item._id);
+                  }}
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className="text-white font-semibold">{item.name}</h3>
 
-          <p>
-            The word Pakarnattam refers to transformation through performance.
-            The term combines pakarnam, which suggests becoming or embodying
-            another form, and attam, meaning play, dance, or enactment. Within
-            the context of Theyyam, this idea of transformation lies at the
-            heart of the ritual. Through elaborate costume, ritual preparation,
-            music, and devotion, the performer moves beyond the identity of an
-            individual and embodies a divine or ancestral presence. This
-            transformation is not merely theatrical but deeply embedded in
-            belief, tradition, and collective memory.
-          </p>
+                      <div
+                        className="flex items-center gap-2"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <p className="text-sm text-neutral-400">{item.email}</p>
 
-          <p>
-            While Theyyam is often recognised for its striking visual spectacle
-            the vibrant face paintings, towering headgear, and elaborate
-            costumes the art form is built upon a much deeper network of
-            stories, sounds, symbols, and lived experiences. Pakarnattam seeks
-            to explore these layers through illustration and visual
-            interpretation, offering a perspective that looks beyond the
-            spectacle and into the many elements that construct the world of
-            Theyyam. The project follows a non-linear approach, allowing viewers
-            to engage with different aspects of the tradition as interconnected
-            dimensions rather than as a single chronological narrative. Each
-            section of the project acts as a window into a different layer of
-            the art form, revealing how mythology, visual identity, sound
-            traditions, and human experience come together within the ritual.
-          </p>
+                        <button
+                          onClick={() => copyEmail(item.email, item._id)}
+                          className="text-neutral-300 hover:text-white "
+                          aria-label="Copy email"
+                        >
+                          {copiedId === item._id ? (
+                            <Check size={16} className="text-green-400" />
+                          ) : (
+                            <Copy size={16} className="cursor-pointer" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
 
-          <p>
-            The project also reflects on the lives of the performers who
-            dedicate themselves to sustaining this tradition. For many artists,
-            Theyyam is not simply a performance practice but a lineage passed
-            down through generations. Their lives involve rigorous preparation,
-            inherited knowledge, and a deep sense of responsibility toward the
-            ritual and the communities they serve. By acknowledging the human
-            presence behind the spectacle, the project highlights the devotion,
-            discipline, and continuity that keep the tradition alive. Through
-            the language of illustration, design, and documentation, Pakarnattam
-            attempts to create an immersive visual experience that invites
-            viewers to engage with the world behind Theyyam. Each illustration
-            acts as a point of entry into the tradition, revealing fragments of
-            story, symbolism, sound, and lived experience.
-          </p>
-        </div>
-      </article>
+                    <div className="text-right">
+                      <div className="text-xs text-neutral-400">{date}</div>
+                      <div className="text-[11px] text-neutral-400">{time}</div>
+                    </div>
+                  </div>
 
-      <ScrollButton isDarkBackground={isDark} />
-    </main>
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      height: isExpandable
+                        ? isExpanded
+                          ? "auto"
+                          : "60px"
+                        : "auto",
+                    }}
+                    transition={{ duration: 0.25 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="bg-neutral-800 rounded-xl p-4 text-neutral-300 text-sm">
+                      {item.idea}
+                    </div>
+                  </motion.div>
+
+                  <div className="mt-3 flex justify-end items-center">
+                    <div className="flex items-center gap-4">
+                      {isExpandable && (
+                        <span className="text-xs text-neutral-400 cursor-pointer">
+                          {isExpanded ? "Click to collapse" : "Click to expand"}
+                        </span>
+                      )}
+
+                      <motion.button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleLike(item._id);
+                        }}
+                        whileTap={{ scale: 0.6 }}
+                        whileHover={{ scale: 1.2 }}
+                        animate={{
+                          scale: item.isLiked ? [1, 1.3, 1] : [1, 0.9, 1],
+                        }}
+                        transition={{ duration: 0.2 }}
+                        aria-label="Like toggle"
+                      >
+                        <Heart
+                          size={20}
+                          className={`transition cursor-pointer ${
+                            item.isLiked
+                              ? "text-red-500 fill-red-500"
+                              : "text-neutral-300"
+                          }`}
+                        />
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
+      </div>
+    </div>
   );
 }
