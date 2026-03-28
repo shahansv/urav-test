@@ -2,54 +2,44 @@
 
 import { useEffect, useState } from "react";
 
-const ASSETS_TO_PRELOAD = {
-  images: [
-    "/pakarnaattam/fire-bg.png",
-    "/pakarnaattam/gulikan-img1.jpg",
-    "/pakarnaattam/gulikan-img2.jpg",
-    "/pakarnaattam/human-behind-the-deity.png",
-    "/pakarnaattam/kannan-mask.jpg",
-    "/pakarnaattam/kannan.jpg",
-    "/pakarnaattam/kathivanoor-veeran-img1.jpg",
-    "/pakarnaattam/kathivanoor-veeran-img2.jpg",
-    "/pakarnaattam/making-img1.jpg",
-    "/pakarnaattam/making-img2.jpg",
-    "/pakarnaattam/making-img3.jpg",
-    "/pakarnaattam/making.png",
-    "/pakarnaattam/map.png",
-    "/pakarnaattam/muthappan-img1.jpg",
-    "/pakarnaattam/muthappan-img2.jpg",
-    "/pakarnaattam/neelu-mask.jpg",
-    "/pakarnaattam/neelu.jpg",
-    "/pakarnaattam/pakarnaattam-hero.jpg",
-    "/pakarnaattam/pottan-img1.jpg",
-    "/pakarnaattam/pottan-img2.jpg",
-    "/pakarnaattam/rhythms-img1.jpg",
-    "/pakarnaattam/rhythms-img2.jpg",
-    "/pakarnaattam/rhythms-img3.jpg",
-    "/pakarnaattam/rhythms.png",
-    "/pakarnaattam/ritual-forms.png",
-    "/pakarnaattam/shashikumar.jpg",
-    "/pakarnaattam/shrine-gulikan-hover.png",
-    "/pakarnaattam/shrine-gulikan.png",
-    "/pakarnaattam/shrine-kathivanoor-veeran-hover.png",
-    "/pakarnaattam/shrine-kathivanoor-veeran.png",
-    "/pakarnaattam/shrine-muthappan-hover.png",
-    "/pakarnaattam/shrine-muthappan.png",
-    "/pakarnaattam/shrine-pottan-hover.png",
-    "/pakarnaattam/shrine-pottan.png",
-    "/pakarnaattam/thayam.jpg",
-    "/pakarnaattam/torch.png",
-  ],
-  audio: [
-    "/pakarnaattam/fire.opus",
-    "/pakarnaattam/gulikan.opus",
-    "/pakarnaattam/kathivanoor-veeran.opus",
-    "/pakarnaattam/muthappan.opus",
-    "/pakarnaattam/pottan.opus",
-    "/pakarnaattam/story.opus",
-  ],
-};
+const ASSETS_TO_PRELOAD = [
+  "/pakarnaattam/fire-bg.png",
+  "/pakarnaattam/gulikan-img1.jpg",
+  "/pakarnaattam/gulikan-img2.jpg",
+  "/pakarnaattam/human-behind-the-deity.png",
+  "/pakarnaattam/kannan-mask.jpg",
+  "/pakarnaattam/kannan.jpg",
+  "/pakarnaattam/kathivanoor-veeran-img1.jpg",
+  "/pakarnaattam/kathivanoor-veeran-img2.jpg",
+  "/pakarnaattam/making-img1.jpg",
+  "/pakarnaattam/making-img2.jpg",
+  "/pakarnaattam/making-img3.jpg",
+  "/pakarnaattam/making.png",
+  "/pakarnaattam/map.png",
+  "/pakarnaattam/muthappan-img1.jpg",
+  "/pakarnaattam/muthappan-img2.jpg",
+  "/pakarnaattam/neelu-mask.jpg",
+  "/pakarnaattam/neelu.jpg",
+  "/pakarnaattam/pakarnaattam-hero.jpg",
+  "/pakarnaattam/pottan-img1.jpg",
+  "/pakarnaattam/pottan-img2.jpg",
+  "/pakarnaattam/rhythms-img1.jpg",
+  "/pakarnaattam/rhythms-img2.jpg",
+  "/pakarnaattam/rhythms-img3.jpg",
+  "/pakarnaattam/rhythms.png",
+  "/pakarnaattam/ritual-forms.png",
+  "/pakarnaattam/shashikumar.jpg",
+  "/pakarnaattam/shrine-gulikan-hover.png",
+  "/pakarnaattam/shrine-gulikan.png",
+  "/pakarnaattam/shrine-kathivanoor-veeran-hover.png",
+  "/pakarnaattam/shrine-kathivanoor-veeran.png",
+  "/pakarnaattam/shrine-muthappan-hover.png",
+  "/pakarnaattam/shrine-muthappan.png",
+  "/pakarnaattam/shrine-pottan-hover.png",
+  "/pakarnaattam/shrine-pottan.png",
+  "/pakarnaattam/thayam.jpg",
+  "/pakarnaattam/torch.png",
+];
 
 function preloadImage(src: string): Promise<void> {
   return new Promise((resolve) => {
@@ -57,16 +47,6 @@ function preloadImage(src: string): Promise<void> {
     img.onload = () => resolve();
     img.onerror = () => resolve();
     img.src = src;
-  });
-}
-
-function preloadAudio(src: string): Promise<void> {
-  return new Promise((resolve) => {
-    const audio = new Audio();
-    audio.oncanplaythrough = () => resolve();
-    audio.onerror = () => resolve();
-    audio.preload = "auto";
-    audio.src = src;
   });
 }
 
@@ -84,15 +64,11 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    const all = [
-      ...ASSETS_TO_PRELOAD.images.map(preloadImage),
-      ...ASSETS_TO_PRELOAD.audio.map(preloadAudio),
-    ];
-    const total = all.length;
+    const total = ASSETS_TO_PRELOAD.length;
     let loaded = 0;
 
-    all.forEach((p) =>
-      p.then(() => {
+    ASSETS_TO_PRELOAD.forEach((src) =>
+      preloadImage(src).then(() => {
         loaded++;
         setAssetProgress(Math.round((loaded / total) * 100));
         if (loaded === total) setAssetsReady(true);
@@ -128,7 +104,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
   return (
     <div
-      className={`fixed inset-0 z-100 bg-black flex flex-col items-center justify-center gap-4 transition-opacity duration-600 ${
+      className={`fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center gap-4 transition-opacity duration-600 ${
         done ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
     >
@@ -142,7 +118,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           </span>
         </div>
 
-        <div className="w-full h-0.5 bg-white/10 rounded-full overflow-hidden">
+        <div className="w-full h-[2px] bg-white/10 rounded-full overflow-hidden">
           <div
             className="h-full bg-white rounded-full"
             style={{
