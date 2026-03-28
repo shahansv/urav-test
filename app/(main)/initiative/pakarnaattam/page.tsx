@@ -1,15 +1,70 @@
 "use client";
 
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import AssetLoader from "@/components/web/asset-loader";
 import ScrollButton from "@/components/web/scroll-button";
+import { useAssetPreloader } from "@/hooks/useAssetPreloader";
+import { AnimatePresence } from "motion/react";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+const PAKARNAATTAM_ASSETS: string[] = [
+  "/pakarnaattam/fire-bg.png",
+  "/pakarnaattam/fire.opus",
+  "/pakarnaattam/gulikan-img1.jpg",
+  "/pakarnaattam/gulikan-img2.jpg",
+  "/pakarnaattam/gulikan.opus",
+  "/pakarnaattam/human-behind-the-deity.png",
+  "/pakarnaattam/kannan-mask.jpg",
+  "/pakarnaattam/kannan.jpg",
+  "/pakarnaattam/kathivanoor-veeran-img1.jpg",
+  "/pakarnaattam/kathivanoor-veeran-img2.jpg",
+  "/pakarnaattam/kathivanoor-veeran.opus",
+  "/pakarnaattam/making-img1.jpg",
+  "/pakarnaattam/making-img2.jpg",
+  "/pakarnaattam/making-img3.jpg",
+  "/pakarnaattam/making.png",
+  "/pakarnaattam/map.png",
+  "/pakarnaattam/muthappan-img1.jpg",
+  "/pakarnaattam/muthappan-img2.jpg",
+  "/pakarnaattam/muthappan.opus",
+  "/pakarnaattam/neelu-mask.jpg",
+  "/pakarnaattam/neelu.jpg",
+  "/pakarnaattam/pakarnaattam-hero.jpg",
+  "/pakarnaattam/pottan-img1.jpg",
+  "/pakarnaattam/pottan-img2.jpg",
+  "/pakarnaattam/pottan.opus",
+  "/pakarnaattam/rhythms-img1.jpg",
+  "/pakarnaattam/rhythms-img2.jpg",
+  "/pakarnaattam/rhythms-img3.jpg",
+  "/pakarnaattam/rhythms.png",
+  "/pakarnaattam/ritual-forms.png",
+  "/pakarnaattam/shashikumar.jpg",
+  "/pakarnaattam/shrine-gulikan-hover.png",
+  "/pakarnaattam/shrine-gulikan.png",
+  "/pakarnaattam/shrine-kathivanoor-veeran-hover.png",
+  "/pakarnaattam/shrine-kathivanoor-veeran.png",
+  "/pakarnaattam/shrine-muthappan-hover.png",
+  "/pakarnaattam/shrine-muthappan.png",
+  "/pakarnaattam/shrine-pottan-hover.png",
+  "/pakarnaattam/shrine-pottan.png",
+  "/pakarnaattam/story.opus",
+  "/pakarnaattam/thayam.jpg",
+  "/pakarnaattam/torch.png",
+];
+
 export default function PakarnaattamPage() {
+  const router = useRouter();
   const articleRef = useRef<HTMLElement>(null);
   const [isDark, setIsDark] = useState(false);
 
+  const { preload, progressMV, isLoading, isDone, error, reset } =
+    useAssetPreloader();
+
+  useEffect(() => {
+    router.prefetch("/pakarnaattam");
+  }, [router]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -29,12 +84,37 @@ export default function PakarnaattamPage() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (isDone && !error) {
+      router.push("/pakarnaattam");
+    }
+  }, [isDone, error, router]);
+
+  const handleImmerse = () => {
+    preload(PAKARNAATTAM_ASSETS);
+  };
+
+  const handleRetry = () => {
+    reset();
+    preload(PAKARNAATTAM_ASSETS);
+  };
+
   return (
     <main
       className={`min-h-screen transition-colors duration-700 ease-in-out ${
         isDark ? "bg-black" : "bg-[#F5F2E9]"
       }`}
     >
+      <AnimatePresence>
+        {isLoading && (
+          <AssetLoader
+            progressMV={progressMV}
+            error={error}
+            onRetry={handleRetry}
+          />
+        )}
+      </AnimatePresence>
+
       <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-14 pt-4 lg:pt-8">
         <div className="relative w-full aspect-320/171">
           <Image
@@ -45,16 +125,24 @@ export default function PakarnaattamPage() {
             priority
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1280px"
           />
+
           <div className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2">
-            <Link href="/pakarnaattam">
+            <div
+              onClick={!isLoading ? handleImmerse : undefined}
+              className={
+                isLoading
+                  ? "pointer-events-none opacity-50 cursor-not-allowed"
+                  : "cursor-pointer"
+              }
+            >
               <HoverBorderGradient
                 containerClassName="rounded-full"
                 as="button"
                 className="bg-black text-white flex items-center space-x-2 px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-medium"
               >
-                <span>Immerse Now</span>
+                <span>{isLoading ? "Loading…" : "Immerse Now"}</span>
               </HoverBorderGradient>
-            </Link>
+            </div>
           </div>
         </div>
       </section>
