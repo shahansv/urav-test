@@ -104,7 +104,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center gap-4 transition-opacity duration-600 ${
+      className={`fixed inset-0 z-100 bg-black flex flex-col items-center justify-center gap-4 transition-opacity duration-600 ${
         done ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
     >
@@ -118,7 +118,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           </span>
         </div>
 
-        <div className="w-full h-[2px] bg-white/10 rounded-full overflow-hidden">
+        <div className="w-full h-0.5 bg-white/10 rounded-full overflow-hidden">
           <div
             className="h-full bg-white rounded-full"
             style={{
